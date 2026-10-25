@@ -24,7 +24,6 @@
                 label="Novo"
                 @click="initGame"
               />
-              <!-- Botão Acerca de -->
               <q-btn
                 size="sm"
                 class="q-px-sm"
