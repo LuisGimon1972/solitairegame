@@ -24,6 +24,15 @@
                 label="Novo"
                 @click="initGame"
               />
+              <!-- Botão Acerca de -->
+              <q-btn
+                size="sm"
+                class="q-px-sm"
+                color="teal-7"
+                icon="info"
+                label="Acerca"
+                @click="showAboutDialog = true"
+              />
               <q-btn
                 size="sm"
                 class="q-px-sm"
@@ -77,7 +86,7 @@
             </div>
           </div>
 
-          <!-- Mesa Principal (Tableau - 7 Colunas com rolagem horizontal automática em telas estreitas) -->
+          <!-- Mesa Principal (Tableau - 7 Colunas com rolagem horizontal automática) -->
           <div class="tableau-scroll-container">
             <div class="tableau-columns-container q-mt-md">
               <div
@@ -102,10 +111,33 @@
           </div>
         </div>
 
+        <!-- Modal de Acerca de / Sobre -->
+        <q-dialog v-model="showAboutDialog">
+          <q-card
+            class="bg-dark text-white q-pa-md text-center"
+            style="min-width: 300px; border-radius: 12px"
+          >
+            <q-card-section>
+              <div class="text-h5 text-amber-5 text-weight-bold q-mb-xs">🃏 Solitaire Game Pro</div>
+              <div class="text-caption text-grey-4 q-mb-md">Versão 1.0.0</div>
+              <p class="text-body2 text-left q-px-sm">
+                Uma experiência moderna e fluida do clássico jogo de cartas Solitário (Klondike),
+                desenvolvida com alto desempenho para dispositivos móveis e computadores.
+              </p>
+              <div class="text-weight-medium text-amber-4 q-mt-md">
+                Desenvolvido por Luis Manuel Gimón
+              </div>
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn flat color="primary" label="Fechar" v-close-popup />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
         <!-- Modal de Vitória com Efeitos Especiais -->
         <q-dialog v-model="hasWon" persistent>
           <q-card
-            class="bg-dark text-white q-p-lg text-center"
+            class="bg-dark text-white q-pa-lg text-center"
             style="min-width: 280px; border-radius: 12px"
           >
             <q-card-section>
@@ -134,6 +166,7 @@ const stock = ref<Card[]>([]);
 const waste = ref<Card[]>([]);
 const foundations = ref<Card[][]>([[], [], [], []]);
 const hasWon = ref<boolean>(false);
+const showAboutDialog = ref<boolean>(false); // Estado para controlar a janela Acerca de
 
 interface GameState {
   tableau: Card[][];
@@ -399,7 +432,6 @@ const moveToFoundation = (foundationIndex: number) => {
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Contenedor responsivo com rolagem horizontal suave para telemóveis */
 .tableau-scroll-container {
   width: 100%;
   overflow-x: auto;
@@ -411,7 +443,7 @@ const moveToFoundation = (foundationIndex: number) => {
   display: flex;
   justify-content: flex-start;
   gap: 10px;
-  min-width: 520px; /* Garante que todas as 7 colunas caibam sem esmagar as cartas */
+  min-width: 520px;
 }
 
 @media (min-width: 600px) {
