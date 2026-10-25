@@ -1,29 +1,44 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
-      <q-page class="q-pa-md bg-green-10 flex flex-center text-white">
-        <div class="solitaire-table">
-          <!-- Barra Superior -->
-          <div class="row justify-between items-center q-mb-md">
-            <div class="text-h6 text-weight-bold">Solitaire Pro</div>
-            <div class="q-gutter-sm">
+      <q-page class="q-pa-xs q-pa-sm-md bg-green-10 flex flex-center text-white">
+        <div class="solitaire-table q-px-xs q-px-sm-md">
+          <!-- Barra Superior Responsiva -->
+          <div class="row justify-between items-center q-mb-sm q-mb-md-md q-gutter-y-xs">
+            <div class="text-subtitle1 text-h6 text-weight-bold">Solitaire Pro</div>
+            <div class="row q-gutter-xs q-gutter-sm-sm">
               <q-btn
-                dense
+                size="sm"
+                class="q-px-sm"
                 color="amber-8"
                 icon="undo"
                 label="Desfazer"
                 :disabled="history.length === 0"
                 @click="undoMove"
               />
-              <q-btn dense color="primary" icon="refresh" label="Novo Jogo" @click="initGame" />
-              <q-btn dense color="negative" icon="logout" label="Sair" @click="exitGame" />
+              <q-btn
+                size="sm"
+                class="q-px-sm"
+                color="primary"
+                icon="refresh"
+                label="Novo"
+                @click="initGame"
+              />
+              <q-btn
+                size="sm"
+                class="q-px-sm"
+                color="negative"
+                icon="logout"
+                label="Sair"
+                @click="exitGame"
+              />
             </div>
           </div>
 
           <!-- Topo: Estoque, Descarte e Fundações -->
-          <div class="row justify-between q-mb-lg">
+          <div class="row justify-between items-center q-mb-md q-mb-md-lg q-gutter-y-sm">
             <!-- Pilha de Compra e Descarte -->
-            <div class="row q-gutter-sm">
+            <div class="row q-gutter-xs q-gutter-sm-sm">
               <div
                 class="card-slot cursor-pointer bg-red-9 flex flex-center shadow-2"
                 @click="drawStockCard"
@@ -45,7 +60,7 @@
             </div>
 
             <!-- Pilhas de Fundação (Destino por Naipe) -->
-            <div class="row q-gutter-sm">
+            <div class="row q-gutter-xs q-gutter-sm-sm">
               <div
                 v-for="(foundation, fIndex) in foundations"
                 :key="fIndex"
@@ -57,27 +72,32 @@
                   class="playing-card"
                   :style="cardAtlas.getCardStyle(foundation[foundation.length - 1]!)"
                 ></div>
-                <span v-else class="text-grey-5 text-h6">♠</span>
+                <span v-else class="text-grey-5 text-subtitle1">♠</span>
               </div>
             </div>
           </div>
 
-          <!-- Mesa Principal (Tableau - 7 Colunas) -->
-          <div class="tableau-columns-container q-mt-md">
-            <div
-              v-for="(column, colIndex) in tableau"
-              :key="colIndex"
-              class="tableau-column cursor-pointer"
-              @click="moveToTableauColumn(colIndex)"
-            >
+          <!-- Mesa Principal (Tableau - 7 Colunas com rolagem horizontal automática em telas estreitas) -->
+          <div class="tableau-scroll-container">
+            <div class="tableau-columns-container q-mt-md">
               <div
-                v-for="(card, cardIndex) in column"
-                :key="card.id"
-                class="playing-card shadow-3 absolute-card"
-                :style="[cardAtlas.getCardStyle(card), { top: `${cardIndex * 30}px`, left: '0px' }]"
-                :class="{ 'selected-card': isCardSelected(colIndex, cardIndex) }"
-                @click.stop="handleCardClick(colIndex, cardIndex)"
-              ></div>
+                v-for="(column, colIndex) in tableau"
+                :key="colIndex"
+                class="tableau-column cursor-pointer"
+                @click="moveToTableauColumn(colIndex)"
+              >
+                <div
+                  v-for="(card, cardIndex) in column"
+                  :key="card.id"
+                  class="playing-card shadow-3 absolute-card"
+                  :style="[
+                    cardAtlas.getCardStyle(card),
+                    { top: `${cardIndex * 26}px`, left: '0px' },
+                  ]"
+                  :class="{ 'selected-card': isCardSelected(colIndex, cardIndex) }"
+                  @click.stop="handleCardClick(colIndex, cardIndex)"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
@@ -86,7 +106,7 @@
         <q-dialog v-model="hasWon" persistent>
           <q-card
             class="bg-dark text-white q-p-lg text-center"
-            style="min-width: 300px; border-radius: 12px"
+            style="min-width: 280px; border-radius: 12px"
           >
             <q-card-section>
               <div class="text-h4 text-amber-5 text-weight-bold q-mb-sm">🏆 Vitória Épica!</div>
@@ -364,35 +384,71 @@ const moveToFoundation = (foundationIndex: number) => {
 .solitaire-table {
   width: 100%;
   max-width: 750px;
+  margin: 0 auto;
 }
+
 .card-slot {
-  width: 67px;
-  height: 119px;
+  width: 54px;
+  height: 96px;
   border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   flex-shrink: 0;
 }
+
 .foundation-slot {
   background: rgba(0, 0, 0, 0.2);
 }
+
+/* Contenedor responsivo com rolagem horizontal suave para telemóveis */
+.tableau-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px;
+}
+
 .tableau-columns-container {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 520px; /* Garante que todas as 7 colunas caibam sem esmagar as cartas */
 }
+
+@media (min-width: 600px) {
+  .tableau-columns-container {
+    justify-content: center;
+  }
+  .card-slot {
+    width: 67px;
+    height: 119px;
+  }
+  .absolute-card {
+    width: 67px;
+    height: 119px;
+  }
+}
+
 .tableau-column {
   position: relative;
-  width: 67px;
-  min-height: 450px;
+  width: 54px;
+  min-height: 400px;
   flex-shrink: 0;
 }
+
+@media (min-width: 600px) {
+  .tableau-column {
+    width: 67px;
+  }
+}
+
 .absolute-card {
   position: absolute;
   top: 0;
   left: 0;
-  width: 67px;
-  height: 119px;
+  width: 54px;
+  height: 96px;
 }
+
 .playing-card {
   border-radius: 6px;
   cursor: pointer;
@@ -401,9 +457,11 @@ const moveToFoundation = (foundationIndex: number) => {
   transition: transform 0.15s ease;
   overflow: hidden;
 }
+
 .playing-card:hover {
   transform: translateY(-3px);
 }
+
 .selected-card {
   filter: brightness(1.1);
   box-shadow: 0 0 8px #ffeb3b;
