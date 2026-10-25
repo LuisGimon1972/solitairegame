@@ -63,7 +63,7 @@ export class CardAtlas {
     return {
       width: `${cardWidth}px`,
       height: `${cardHeight}px`,
-      backgroundImage: 'url(/images/card-atlas.png)',
+      backgroundImage: 'url(./images/card-atlas.png)',
       backgroundPosition: `-${posX}px -${posY}px`,
       backgroundSize: `${atlasWidth}px ${atlasHeight}px`,
       backgroundRepeat: 'no-repeat',
